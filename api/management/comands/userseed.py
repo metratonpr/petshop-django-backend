@@ -38,3 +38,39 @@ class Command(BaseCommand):
         except IntegrityError:
             self.stdout.write("Superusuário 'admin' já existe.")
             admin_user = User.objects.get(username='admin')
+            
+        # 3. Criar Usuário 'gerente'
+        try:
+            gerente = User.objects.create_user(
+                username='gerente', 
+                password='senha123', 
+                first_name='Gerente de Teste'
+            )
+            gerente.groups.add(grupo_gerentes)
+            self.stdout.write(self.style.SUCCESS("Usuário 'gerente' CRIADO"+
+                                                 " e adicionado ao grupo 'Gerentes'."))
+
+        except IntegrityError:
+            self.stdout.write("Usuário 'gerente' já existe, garantindo grupo...")
+            gerente = User.objects.get(username='gerente')
+            if not gerente.groups.filter(name='Gerentes').exists():
+                gerente.groups.add(grupo_gerentes)
+                
+         # 4. Criar Usuário 'operador'
+        try:
+            operador = User.objects.create_user(
+                username='operador', 
+                password='senha123', 
+                first_name='Operador de Teste'
+            )
+            operador.groups.add(grupo_operadores)
+            self.stdout.write(self.style.SUCCESS("Usuário 'operador' CRIADO"+
+                                                 " e adicionado ao grupo 'Operadores'."))
+
+        except IntegrityError:
+            self.stdout.write("Usuário 'operador' já existe, garantindo grupo...")
+            operador = User.objects.get(username='operador')
+            if not operador.groups.filter(name='Operadores').exists():
+                operador.groups.add(grupo_operadores)
+
+        self.stdout.write(self.style.SUCCESS('\n--- Script Concluído ---'))
