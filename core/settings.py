@@ -37,6 +37,13 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+
+    # Your apps go here
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'guardian',
+    'api'
+
 ]
 
 MIDDLEWARE = [
@@ -120,3 +127,18 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+#Configurações REST Framework
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ), 'DEFAULT_PERMISSION_CLASSES': (
+        #Bloqueia o acesso para usuários não autenticados 
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+#Configuração do Guardian
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend', # Padrão
+    'guardian.backends.ObjectPermissionBackend', #Correção do Warning
+)
