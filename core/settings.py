@@ -135,6 +135,7 @@ REST_FRAMEWORK = {
     ), 'DEFAULT_PERMISSION_CLASSES': (
         #Bloqueia o acesso para usuários não autenticados 
         'rest_framework.permissions.IsAuthenticated',
+        
     ),
 }
 #Configuração do Guardian
