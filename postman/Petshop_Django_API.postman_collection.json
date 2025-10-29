@@ -1,0 +1,443 @@
+{
+  "info": {
+    "name": "Petshop Django Backend API",
+    "description": "Coleção completa da API do sistema de petshop Django",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{access_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "access_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refresh_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Autenticação",
+      "item": [
+        {
+          "name": "Obter Token JWT",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Extrair tokens da resposta",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', response.access);",
+                  "    pm.collectionVariables.set('refresh_token', response.refresh);",
+                  "    pm.test('Token obtido com sucesso', function () {",
+                  "        pm.expect(response.access).to.be.a('string');",
+                  "        pm.expect(response.refresh).to.be.a('string');",
+                  "    });",
+                  "} else {",
+                  "    pm.test('Erro na autenticação', function () {",
+                  "        pm.expect.fail('Credenciais inválidas');",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/token/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "token", ""]
+            },
+            "description": "Endpoint para obter token JWT de acesso e refresh"
+          }
+        },
+        {
+          "name": "Renovar Token JWT",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('access_token', response.access);",
+                  "    pm.test('Token renovado com sucesso', function () {",
+                  "        pm.expect(response.access).to.be.a('string');",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"refresh\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/token/refresh/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "token", "refresh", ""]
+            },
+            "description": "Endpoint para renovar o token JWT usando o refresh token"
+          }
+        }
+      ]
+    },
+    {
+      "name": "👥 Usuários",
+      "item": [
+        {
+          "name": "Listar Usuários",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", ""]
+            },
+            "description": "Lista todos os usuários (admin) ou apenas o usuário atual"
+          }
+        },
+        {
+          "name": "Obter Usuário por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "1", ""]
+            },
+            "description": "Obtém detalhes de um usuário específico"
+          }
+        },
+        {
+          "name": "Criar Usuário",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"novo_usuario\",\n    \"email\": \"usuario@exemplo.com\",\n    \"password\": \"senha123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", ""]
+            },
+            "description": "Cria um novo usuário no sistema"
+          }
+        },
+        {
+          "name": "Atualizar Usuário",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"usuario_atualizado\",\n    \"email\": \"novo_email@exemplo.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "1", ""]
+            },
+            "description": "Atualiza completamente um usuário"
+          }
+        },
+        {
+          "name": "Atualizar Usuário Parcial",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"email_parcial@exemplo.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/users/1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "1", ""]
+            },
+            "description": "Atualiza parcialmente um usuário"
+          }
+        },
+        {
+          "name": "Deletar Usuário",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/users/1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "users", "1", ""]
+            },
+            "description": "Remove um usuário do sistema"
+          }
+        }
+      ]
+    },
+    {
+      "name": "📋 Ordens de Produção",
+      "item": [
+        {
+          "name": "Listar Ordens de Produção",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/ordens-producao/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ordens-producao", ""]
+            },
+            "description": "Lista todas as ordens de produção (admin/gerente) ou apenas as do usuário atual"
+          }
+        },
+        {
+          "name": "Obter Ordem por ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/ordens-producao/1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ordens-producao", "1", ""]
+            },
+            "description": "Obtém detalhes de uma ordem de produção específica"
+          }
+        },
+        {
+          "name": "Criar Ordem de Produção",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"produto\": \"Ração Premium para Cães\",\n    \"quantidade\": 50\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ordens-producao/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ordens-producao", ""]
+            },
+            "description": "Cria uma nova ordem de produção"
+          }
+        },
+        {
+          "name": "Atualizar Ordem de Produção",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"produto\": \"Ração Premium para Gatos\",\n    \"quantidade\": 75\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ordens-producao/1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ordens-producao", "1", ""]
+            },
+            "description": "Atualiza completamente uma ordem de produção (apenas owner ou admin)"
+          }
+        },
+        {
+          "name": "Atualizar Ordem Parcial",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"quantidade\": 100\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ordens-producao/1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ordens-producao", "1", ""]
+            },
+            "description": "Atualiza parcialmente uma ordem de produção"
+          }
+        },
+        {
+          "name": "Deletar Ordem de Produção",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/ordens-producao/1/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ordens-producao", "1", ""]
+            },
+            "description": "Remove uma ordem de produção (apenas owner ou admin)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🧪 Testes de Cenários",
+      "item": [
+        {
+          "name": "Teste: Login + Criar Ordem",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "// Este teste faz login primeiro e depois cria uma ordem",
+                  "console.log('Iniciando teste completo...');"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{access_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"produto\": \"Teste de Integração\",\n    \"quantidade\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/ordens-producao/",
+              "host": ["{{base_url}}"],
+              "path": ["api", "ordens-producao", ""]
+            },
+            "description": "Teste de cenário completo: autenticação + criação de ordem"
+          }
+        }
+      ]
+    }
+  ]
+}
